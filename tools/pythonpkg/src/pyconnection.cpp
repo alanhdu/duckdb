@@ -285,8 +285,7 @@ unique_ptr<DuckDBPyRelation> DuckDBPyConnection::FromDF(py::object value) {
 	}
 	string name = "df_" + GenerateRandomName();
 	registered_objects[name] = make_unique<RegisteredObject>(value);
-	vector<Value> params;
-	params.emplace_back(Value::POINTER((uintptr_t)value.ptr()));
+	vector<Value> params {Value::POINTER((uintptr_t)value.ptr())};
 	return make_unique<DuckDBPyRelation>(connection->TableFunction("pandas_scan", params)->Alias(name));
 }
 
@@ -294,8 +293,7 @@ unique_ptr<DuckDBPyRelation> DuckDBPyConnection::FromCsvAuto(const string &filen
 	if (!connection) {
 		throw std::runtime_error("connection closed");
 	}
-	vector<Value> params;
-	params.emplace_back(filename);
+	vector<Value> params { filename };
 	return make_unique<DuckDBPyRelation>(connection->TableFunction("read_csv_auto", params)->Alias(filename));
 }
 
@@ -303,8 +301,7 @@ unique_ptr<DuckDBPyRelation> DuckDBPyConnection::FromParquet(const string &filen
 	if (!connection) {
 		throw std::runtime_error("connection closed");
 	}
-	vector<Value> params;
-	params.emplace_back(filename);
+	vector<Value> params { filename };
 	named_parameter_map_t named_parameters({{"binary_as_string", Value::BOOLEAN(binary_as_string)}});
 	return make_unique<DuckDBPyRelation>(
 	    connection->TableFunction("parquet_scan", params, named_parameters)->Alias(filename));
